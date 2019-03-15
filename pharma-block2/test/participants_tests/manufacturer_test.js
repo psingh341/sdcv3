@@ -83,7 +83,7 @@ describe('Publish Product', () => {
         await businessNetworkConnection.connect(adminCardName);
     });
 
-    describe('#publish', () => {
+    describe('#create new product', () => {
 
         it('should be able to publish a new product', async () => {
 
@@ -114,23 +114,58 @@ describe('Publish Product', () => {
 	    product.owner = "test_owner";
 	    product.issuer = "test_issuer";
 
+            const issuerRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Issuer');
+            const productRegistry = await businessNetworkConnection.getAssetRegistry(namespace + '.ProductAsset');
+            const newProductAsset = await productRegistry.get(publishProduct.identifier);
 
-            // create the publish the bond transaction
-            //const publishProduct = factory.newTransaction(namespace, 'MoveProduct'); //this is the transaction described in the model
-            //publishProduct.Product = product;
+            newProductAsset.identifier.should.equal(product.identifier);
+        });
+
+        it('should be able to give ownership to f&t', async () => {
+
+            const factory = businessNetworkConnection.getBusinessNetwork().getFactory();
+
+            // create the issuer
+            const issuer = factory.newResource(namespace, 'Issuer', 'daniel.selman@example.com');
+            issuer.name = 'Dan Selman Holdings';
+
+            // create the bond
+            const product = factory.newConcept(namespace, 'Product');
+	    product.identifier = "123";
+	    product.certificateOfOrigin = "1";
+	    product.batchNumber = "2";
+	    product.lotSize = "3";
+	    product.expirationDate = "test_expirationDate";
+	    product.shipmentDate = "test_shipmentDate";
+            product.trackingNumber = "test_trackingNumber";
+	    product.freightTemperature = "test_freightTemperature";
+	    product.receivedDate = "test_receivedDate";
+	    product.pickDate = "test_pickdate";
+	    product.customsTemperature = "test_customsTemperature";
+	    product.orderNumber = "test_ordernumber";
+	    product.serialNumber = "test_serialnumber";
+	    product.orderDate = "test_orderDate";
+	    product.invoiceNumber = "test_invoicenumber";
+	    product.retailerTemperature "test_retailerTemperature";
+	    product.owner = "test_owner";
+	    product.issuer = "test_issuer";
+
+
+            //const tradeProduct = factory.newTransaction(namespace, 'MoveProduct'); //this is the transaction described in the model
+            //tradeProduct.Product = product;
 
             const issuerRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Issuer');
 
             // add the issuers
             //await issuerRegistry.addAll([issuer]);
 
-            // submit the publishBond
-            //await businessNetworkConnection.submitTransaction(publishBond);
+            // submit the trade product transaction
+            //await businessNetworkConnection.submitTransaction(tradeProduct);
 
-            // get the bond and check its contents
+            // get the product and check its contents
             const productRegistry = await businessNetworkConnection.getAssetRegistry(namespace + '.ProductAsset');
             const newProductAsset = await productRegistry.get(publishProduct.identifier);
-            //newBondAsset.identifier.should.equal(publishProduct.identifier);
+            //newProductAsset.identifier.should.equal(tradeProduct.identifier);
             newProductAsset.identifier.should.equal(product.identifier);
         });
     });
